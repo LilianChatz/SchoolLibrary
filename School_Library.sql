@@ -378,6 +378,7 @@ BEGIN
         -- Το βιβλίο βρίσκεται σε κράτηση
 	UPDATE Reservations
    	SET on_hold = 1
+	WHERE ISBN = NEW.ISBN AND user_id=new.user_id;
     END IF;
 END;;
 
