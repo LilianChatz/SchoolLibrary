@@ -59,7 +59,7 @@ CREATE TABLE Users (
 
 -- Πίνακας: Books
 CREATE TABLE Books (
-	ISBN CHAR(13) PRIMARY KEY,
+	ISBN CHAR(13) NOT NULL PRIMARY KEY,
 	title VARCHAR(100) NOT NULL,
 	pages INT(10) NOT NULL,
 	editor VARCHAR(100) NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE Categories (
 
 CREATE TABLE book_category (
 	category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	ISBN CHAR(13),
+	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY (category_id, ISBN),
 	FOREIGN KEY (category_id) REFERENCES Categories(category_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
@@ -91,7 +91,7 @@ CREATE TABLE Authors (
 
 CREATE TABLE book_author (
 	author_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	ISBN CHAR(13),
+	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY (author_id, ISBN),
 	FOREIGN KEY (author_id) REFERENCES Authors(author_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
@@ -104,7 +104,7 @@ CREATE TABLE Languages (
 
 CREATE TABLE book_language (
 	language_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	ISBN CHAR(13),
+	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY(language_id, ISBN),
 	FOREIGN KEY (language_id) REFERENCES Languages(language_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
