@@ -237,29 +237,35 @@ CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-DECLARE reservation_count INT;
-DECLARE overdue_returns INT;
-DECLARE available_copies INT;
--- Έλεγχος καθυστερημένων επιστροφών
-    SELECT Inventory.overdue_returns INTO overdue_returns
+    DECLARE reservation_count INT;
+    DECLARE overdue_returns INT;
+    DECLARE available_copies INT;
+
+    -- Έλεγχος καθυστερημένων επιστροφών
+    SELECT Users.overdue_returns INTO overdue_returns
     FROM Users
-    WHERE Invetory.user_id = NEW.user_id;
+    WHERE Users.user_id = NEW.user_id;
+
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
-	-- Έλεγχος αν υπάρχει κράτηση για το βιβλίο και τον συγκεκριμένο χρήστη
+
+    -- Έλεγχος αν υπάρχει κράτηση για το βιβλίο και τον συγκεκριμένο χρήστη
     SELECT COUNT(*) INTO reservation_count
     FROM Reservations
-    WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;    
+    WHERE Reservations.user_id = NEW.user_id AND Reservations.ISBN = NEW.ISBN;
+
     -- Αν υπάρχει κράτηση, αποτροπή της εισαγωγής της εγγραφής δανεισμού
     IF reservation_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Το βιβλίο είναι ήδη σε κράτηση για τον συγκεκριμένο χρήστη'
-	END IF;	
-    -- Ελέγχει αν το βιβλίο έχει διαθέσιμα αντίτυπα
+        SET MESSAGE_TEXT = 'Το βιβλίο είναι ήδη σε κράτηση για τον συγκεκριμένο χρήστη';
+    END IF;
+
+    -- Έλεγχος αν το βιβλίο έχει διαθέσιμα αντίτυπα
     SELECT Inventory.available_copies INTO available_copies
     FROM Inventory
     WHERE Inventory.ISBN = NEW.ISBN AND (Inventory.loaned = 0 OR Inventory.reserved = 0);
+
     -- Αν δεν υπάρχουν διαθέσιμα αντίτυπα, ανακόπτει την εισαγωγή
     IF available_copies = 0 THEN
         SIGNAL SQLSTATE '45000'
