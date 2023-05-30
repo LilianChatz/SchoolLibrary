@@ -56,16 +56,17 @@ CREATE TABLE Users (
 	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
 );
 
+DELIMETER;;
 CREATE TRIGGER SetApprovalAc
 BEFORE INSERT ON Users
 FOR EACH ROW
 BEGIN
 	IF NEW.role_id = 1 THEN
-		SET NEW.approval_ac = TRUE;
+		SET NEW.approval_ac = TRUE,
 	ELSE
-		SET NEW.approval_ac = FALSE;
+		SET NEW.approval_ac = FALSE,
 	END IF;
-END;
+END;;
 
 
 -- Πίνακας: Books
