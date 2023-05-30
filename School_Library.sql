@@ -203,11 +203,11 @@ BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
     DECLARE available_copies INT;
-	DECLARE overdue_returns INT;
-	DECLARE reservation_count INT;
+    DECLARE overdue_returns INT;
+    DECLARE reservation_count INT;
 	
 	-- Έλεγχος καθυστερημένων επιστροφών
-    SELECT COUNT(*) INTO overdue_returns
+    SELECT overdue_returns
     FROM Loans
     WHERE user_id = NEW.user_id
     AND return_date < CURRENT_DATE
@@ -218,7 +218,7 @@ BEGIN
     END IF;
 
 	-- Έλεγχος αν υπάρχει κράτηση για το βιβλίο και τον συγκεκριμένο χρήστη
-    SELECT COUNT(*) INTO reservation_count
+    SELECT reservation_count
     FROM Reservations
     WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;
     
@@ -229,7 +229,7 @@ BEGIN
 	END IF;
 	
     -- Ελέγχει αν το βιβλίο έχει διαθέσιμα αντίτυπα
-    SELECT COUNT(*) INTO available_copies
+    SELECT available_copies
     FROM Inventory
     WHERE ISBN = NEW.ISBN AND (loaned = FALSE OR reserved=FALSE);
 
@@ -246,28 +246,21 @@ CREATE TRIGGER cancel_reservation_trigger
 AFTER DELETE ON Reservations
 FOR EACH ROW
 BEGIN
-    DECLARE user_id INT;
-    DECLARE ISBN INT;
-    DECLARE reservation_id INT;
-    
+    DECLARE reservations_exist INT;
     -- Ανάκτηση των user_id και ISBN από τη διαγραφή της κράτησης
     SET user_id = OLD.user_id;
-    SET ISBN = OLD.ISBN;
-    
+    SET ISBN = OLD.ISBN;    
     -- Έλεγχος για την ύπαρξη της κράτησης
-    SELECT COUNT(*) INTO reservation_id
+    SELECT COUNT(*) INTO reservations_exist
     FROM Reservations
     WHERE user_id = user_id AND ISBN = ISBN;
-    
     -- Αν η κράτηση υπάρχει, εκτελέστε τις ενέργειες ακύρωσης
-    IF reservation_id > 0 THEN
+    IF reservations_exist > 0 THEN
         -- Ενημέρωση του πίνακα Inventory για το βιβλίο που ακυρώθηκε η κράτηση
         UPDATE Inventory
         SET available_copies = available_copies + 1
-        WHERE ISBN = ISBN;
-        
-    END IF;
-    
+        WHERE ISBN = ISBN;        
+    END IF;    
 END;;
 
 -- Δημιουργία του προγραμματισμένου γεγονότος
@@ -287,24 +280,19 @@ DELIMITER ;
 CREATE TRIGGER convert_reservation_to_loan
 AFTER INSERT ON Reservations
 FOR EACH ROW
-BEGIN
-    DECLARE available_copies INT;
-    
+BEGIN   
     -- Έλεγχος αν το βιβλίο είναι διαθέσιμο
-    SELECT COUNT(*) INTO available_copies
+    SELECT available_copies
     FROM Inventory
-    WHERE ISBN = NEW.ISBN;
-    
+    WHERE ISBN = NEW.ISBN;    
     IF available_copies > 0 THEN
         -- Εισαγωγή νέας εγγραφής στον πίνακα δανεισμένων
         INSERT INTO Loans (user_id, ISBN, loan_date)
-        VALUES (NEW.user_id, NEW.ISBN, CURDATE());
-        
+        VALUES (NEW.user_id, NEW.ISBN, CURDATE());        
         -- Μείωση του αριθμού των διαθέσιμων αντιτύπων στον πίνακα inventory
         UPDATE Inventory
         SET available_copies = available_copies - 1
-        WHERE ISBN = NEW.ISBN;
-        
+        WHERE ISBN = NEW.ISBN;      
         -- Διαγραφή της εγγραφής από τον πίνακα κρατήσεων
         DELETE FROM Reservations
         WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;
@@ -315,12 +303,9 @@ CREATE TRIGGER check_reservation
 AFTER INSERT ON Reservations
 FOR EACH ROW
 BEGIN
-    DECLARE reservation_count INT;
-
-    SELECT COUNT(*) INTO reservation_count
+    SELECT reservation_count
     FROM Reservations
     WHERE ISBN = NEW.ISBN;
-
     IF reservation_count > 0 THEN
         -- Το βιβλίο βρίσκεται σε κράτηση
         SET on_hold = TRUE
@@ -331,9 +316,7 @@ CREATE TRIGGER check_and_reserve_book
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-    DECLARE available_copies INT;
-    SET available_copies = (SELECT available_copies FROM Inventory WHERE ISBN = NEW.ISBN);
-    
+    SELECT available_copies FROM Inventory WHERE ISBN = NEW.ISBN;
     IF available_copies > 0 THEN
         UPDATE Inventory SET available_copies = available_copies - 1 WHERE ISBN = NEW.ISBN;
     ELSE
