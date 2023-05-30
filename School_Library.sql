@@ -114,8 +114,8 @@ CREATE TABLE Inventory (
        school_id INT UNSIGNED NOT NULL,
        ISBN CHAR(13) NOT NULL,
        available_copies INT(20) NOT NULL,
-       loaned BOOLEAN NOT NULL DEFAULT FALSE,
-       reserved BOOLEAN NOT NULL DEFAULT FALSE,
+       loaned BOOLEAN DEFAULT FALSE,
+       reserved BOOLEAN DEFAULT FALSE,
        FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
        FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
