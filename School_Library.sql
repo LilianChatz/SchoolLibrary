@@ -57,12 +57,9 @@ CREATE TABLE Users (
 );
 
 DELIMETER;;
-CREATE TRIGGER SetApprovalAc
-BEFORE INSERT ON Users
-FOR EACH ROW
-BEGIN
-	IF NEW.role_id = 1 THEN
-		SET NEW.approval_ac = 'TRUE';
+CREATE TRIGGER SetApprovalAc BEFORE INSERT ON Users FOR EACH ROW BEGIN
+	IF role_id = 1 THEN
+		SET approval_ac = TRUE;
 	END IF;
 END;;
 
