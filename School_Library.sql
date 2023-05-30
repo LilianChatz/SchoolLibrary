@@ -59,12 +59,13 @@ CREATE TABLE Users (
 
 -- Πίνακας: Books
 CREATE TABLE Books (
-	ISBN CHAR(13) NOT NULL PRIMARY KEY,
+	ISBN CHAR(13) NOT NULL,
 	title VARCHAR(100) NOT NULL,
 	pages INT(10) NOT NULL,
 	editor VARCHAR(100) NOT NULL,
 	summary TEXT,
 	images BLOB,
+	PRIMARY KEY (ISBN),
 	key_words VARCHAR(200) NOT NULL
 );
 
