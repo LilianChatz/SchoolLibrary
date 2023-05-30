@@ -109,14 +109,14 @@ CREATE TABLE book_language (
 );
 
 CREATE TABLE Inventory (
-	inventory_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	school_id INT UNSIGNED NOT NULL,
-	ISBN CHAR(13) NOT NULL,
-	available_copies INT(20) NOT NULL,
-	loaned BOOLEAN NOT NULL DEFAULT FALSE,
-	reserved BOOLEAN NOT NULL DEFAULT FALSE,
-	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
-	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       inventory_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+       school_id INT UNSIGNED NOT NULL,
+       ISBN CHAR(13) NOT NULL,
+       available_copies INT(20) NOT NULL,
+       loaned BOOLEAN NOT NULL DEFAULT FALSE,
+       reserved BOOLEAN NOT NULL DEFAULT FALSE,
+       FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
+       FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
 
 -- Έλεγχος ύπαρξης του ISBN στον πίνακα Books πριν γίνει εισαγωγή στον πίνακα Inventory
@@ -150,7 +150,7 @@ CREATE TABLE Loans (
 
 -- Πίνακας: Book_Reservations
 CREATE TABLE Reservations (
-	reservation_id INT PRIMARY KEY,
+	reservation_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(200),
 	ISBN CHAR(13) NOT NULL,
 	reservation_date DATE,
@@ -162,7 +162,7 @@ CREATE TABLE Reservations (
 
 -- Πίνακας: Book_Reviews
 CREATE TABLE Reviews (
-	review_id INT PRIMARY KEY,
+	review_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(200),
 	ISBN CHAR(13) NOT NULL,
 	review_text TEXT,
@@ -170,6 +170,22 @@ CREATE TABLE Reviews (
 	FOREIGN KEY (user_id) REFERENCES Users(user_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
+
+CREATE TRIGGER UpdateReservedStatus AFTER INSERT ON Reservations FOR EACH ROW BEGIN
+    UPDATE Inventory
+    SET reserved = 1
+    WHERE ISBN = NEW.ISBN;
+END;
+
+CREATE TRIGGER UpdateLoanedStatus
+AFTER INSERT ON Loans
+FOR EACH ROW
+BEGIN
+    UPDATE Inventory
+    SET loaned = 1
+    WHERE ISBN = NEW.ISBN;
+END;
+
 
 -- Δημιουργία trigger για περιορισμούς δανεισμού και κρατήσεων
 DELIMITER ;;
@@ -194,7 +210,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
 END ;;
-DELIMITER ;
 
 
 DELIMITER ;;
@@ -203,37 +218,28 @@ CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-    DECLARE available_copies INT;
-    DECLARE overdue_returns INT;
-    DECLARE reservation_count INT;
-	
-	-- Έλεγχος καθυστερημένων επιστροφών
+-- Έλεγχος καθυστερημένων επιστροφών
     SELECT overdue_returns
     FROM Loans
     WHERE user_id = NEW.user_id
     AND return_date < CURRENT_DATE
-    AND returned = TRUE;
-
+    AND returned = 1;
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
-
 	-- Έλεγχος αν υπάρχει κράτηση για το βιβλίο και τον συγκεκριμένο χρήστη
     SELECT reservation_count
     FROM Reservations
-    WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;
-    
+    WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;    
     -- Αν υπάρχει κράτηση, αποτροπή της εισαγωγής της εγγραφής δανεισμού
     IF reservation_count > 0 THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Το βιβλίο είναι ήδη σε κράτηση για τον συγκεκριμένο χρήστη'
-	END IF;
-	
+	END IF;	
     -- Ελέγχει αν το βιβλίο έχει διαθέσιμα αντίτυπα
     SELECT available_copies
     FROM Inventory
-    WHERE ISBN = NEW.ISBN AND (loaned = FALSE OR reserved=FALSE);
-
+    WHERE ISBN = NEW.ISBN AND (loaned = 0 OR reserved = 0);
     -- Αν δεν υπάρχουν διαθέσιμα αντίτυπα, ανακόπτει την εισαγωγή
     IF available_copies = 0 THEN
         SIGNAL SQLSTATE '45000'
