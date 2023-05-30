@@ -82,7 +82,7 @@ CREATE TABLE book_category (
 
 -- Πίνακας: Authors
 CREATE TABLE Authors (
-  author_id INT PRIMARY KEY,
+  author_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL
 );
