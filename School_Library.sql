@@ -48,21 +48,19 @@ CREATE TABLE Users (
 	password VARCHAR(255) NOT NULL,
 	user_details_id INT NOT NULL,
 	role_id INT,
-	role_name VARCHAR(255) NOT NULL,
 	approval_ac BOOLEAN DEFAULT FALSE,
 	school_id INT NOT NULL,
 	max_books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
-	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
-	FOREIGN KEY (role_name) REFERENCES Roles(role_name)
+	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
 );
 
 CREATE TRIGGER SetApprovalAc
 BEFORE INSERT ON Users
 FOR EACH ROW
 BEGIN
-	IF NEW.role_name = 'Διαχειριστής' THEN
+	IF NEW.role_id = '1' THEN
 		SET NEW.approval_ac = TRUE;
 	ELSE
 		SET NEW.approval_ac = FALSE;
