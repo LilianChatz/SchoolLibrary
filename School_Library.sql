@@ -386,7 +386,8 @@ CREATE TRIGGER check_and_reserve_book
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-    SELECT available_copies FROM Inventory WHERE ISBN = NEW.ISBN;
+DECLARE available_copies INT;
+    SELECT Inventory.available_copies INTO available_copies FROM Inventory WHERE Inventory.ISBN = NEW.ISBN;
     IF available_copies > 0 THEN
         UPDATE Inventory SET available_copies = available_copies - 1 WHERE ISBN = NEW.ISBN;
     ELSE
