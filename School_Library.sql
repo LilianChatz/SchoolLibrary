@@ -238,10 +238,12 @@ BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
 DECLARE reservation_count INT;
+DECLARE overdue_returns INT;
+DECLARE available_copies INT;
 -- Έλεγχος καθυστερημένων επιστροφών
-    SELECT overdue_returns
+    SELECT Inventory.overdue_returns INTO overdue_returns
     FROM Users
-    WHERE user_id = NEW.user_id;
+    WHERE Invetory.user_id = NEW.user_id;
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
@@ -255,9 +257,9 @@ DECLARE reservation_count INT;
             SET MESSAGE_TEXT = 'Το βιβλίο είναι ήδη σε κράτηση για τον συγκεκριμένο χρήστη'
 	END IF;	
     -- Ελέγχει αν το βιβλίο έχει διαθέσιμα αντίτυπα
-    SELECT available_copies
+    SELECT Inventory.available_copies INTO available_copies
     FROM Inventory
-    WHERE ISBN = NEW.ISBN AND (loaned = 0 OR reserved = 0);
+    WHERE Inventory.ISBN = NEW.ISBN AND (Inventory.loaned = 0 OR Inventory.reserved = 0);
     -- Αν δεν υπάρχουν διαθέσιμα αντίτυπα, ανακόπτει την εισαγωγή
     IF available_copies = 0 THEN
         SIGNAL SQLSTATE '45000'
