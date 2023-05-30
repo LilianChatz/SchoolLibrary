@@ -46,14 +46,15 @@ CREATE TABLE user_details (
 CREATE TABLE Users (
 	user_id VARCHAR(200) PRIMARY KEY,
 	password VARCHAR(255) NOT NULL,
-	user_details_id INT NOT NULL,
+	user_details_id VARCHAR(200),
 	role_id INT,
 	school_id INT UNSIGNED NOT NULL,
 	books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
 	overdue_returns INT(10),
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
-	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
+	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
+	FOREIGN KEY (user_details_id) REFERENCES user_details(user_details_id)
 );
 
 -- Πίνακας: Books
