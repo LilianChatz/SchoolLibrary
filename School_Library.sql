@@ -49,7 +49,7 @@ CREATE TABLE Users (
 	user_details_id INT NOT NULL,
 	role_id INT,
 	school_id INT UNSIGNED NOT NULL,
-	max_books_borrowed INT DEFAULT 0,
+	books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
 	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
@@ -75,7 +75,7 @@ CREATE TABLE Categories (
 CREATE TABLE book_category (
 	category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	ISBN CHAR(13),
-	PRIMARY KEY (category_id, ISBN)
+	PRIMARY KEY (category_id, ISBN),
 	FOREIGN KEY (category_id) REFERENCES Categories(category_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
@@ -88,8 +88,9 @@ CREATE TABLE Authors (
 );
 
 CREATE TABLE book_author (
-	author_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ISBN CHAR(13) PRIMARY KEY,
+	author_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	ISBN CHAR(13),
+	PRIMARY KEY (author_id, ISBN),
 	FOREIGN KEY (author_id) REFERENCES Authors(author_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
@@ -100,17 +101,18 @@ CREATE TABLE Languages (
 );
 
 CREATE TABLE book_language (
-	language_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ISBN CHAR(13) PRIMARY KEY,
+	language_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	ISBN CHAR(13),
+	PRIMARY KEY(language_id, ISBN),
 	FOREIGN KEY (language_id) REFERENCES Languages(language_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
 
 CREATE TABLE Inventory (
 	inventory_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	school_id INT NOT NULL,
+	school_id INT UNSIGNED NOT NULL,
 	ISBN CHAR(13) NOT NULL,
-	copies_available INT(20) NOT NULL,
+	available_copies INT(20) NOT NULL,
 	loaned BOOLEAN NOT NULL DEFAULT FALSE,
 	reserved BOOLEAN NOT NULL DEFAULT FALSE,
 	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id),
@@ -123,12 +125,10 @@ CREATE TRIGGER check_book_exists
 BEFORE INSERT ON Inventory
 FOR EACH ROW
 BEGIN
-    DECLARE count INT;
-    
-    SELECT COUNT(*) INTO count
+    DECLARE book_count INT
+    SELECT COUNT(*) INTO book_count
     FROM Books
     WHERE ISBN = NEW.ISBN;
-    
     IF count = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Το βιβλίο με το συγκεκριμένο ISBN δεν υπάρχει';
     END IF;
@@ -178,17 +178,17 @@ FOR EACH ROW
 BEGIN
     DECLARE error_message VARCHAR(255);
     
-    IF (NEW.role_name = 'Εκπαιδευτικός' AND (NEW.max_books_borrowed > 1 OR NEW.weekly_reservations > 1)) THEN
+    IF (NEW.role_id = 3 AND (NEW.books_borrowed > 1 OR NEW.weekly_reservations > 1)) THEN
         SET error_message = 'Ο εκπαιδευτικός μπορεί να δανειστεί έως και ένα βιβλίο την εβδομάδα ή να κάνει κράτηση εως και για ένα βιβλίο.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
 
-    IF (NEW.role_name = 'Χειριστής' AND (NEW.max_books_borrowed > 1 OR NEW.weekly_reservations > 1)) THEN
+    IF (NEW.role_id = 2 AND (NEW.books_borrowed > 1 OR NEW.weekly_reservations > 1)) THEN
         SET error_message = 'Ο χειριστής μπορεί να δανειστεί έως και ένα βιβλίο την εβδομάδα ή να κάνει κράτηση εως και για ένα βιβλίο.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
     
-    IF (NEW.role_name = 'Μαθητής' AND (NEW.max_books_borrowed > 2 OR NEW.weekly_reservations > 2)) THEN
+    IF (NEW.role_id = 4 AND (NEW.books_borrowed > 2 OR NEW.weekly_reservations > 2)) THEN
         SET error_message = 'Ο μαθητής μπορεί να δανειστεί έως και δύο βιβλία την εβδομάδα ή να κάνει κράτηση εως και για δύο βιβλία.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
