@@ -346,11 +346,12 @@ DELIMITER ;
 CREATE TRIGGER convert_reservation_to_loan
 AFTER INSERT ON Reservations
 FOR EACH ROW
-BEGIN   
+BEGIN 
+DECLARE available_copies INT;
     -- Έλεγχος αν το βιβλίο είναι διαθέσιμο
-    SELECT available_copies
+    SELECT Inventory.available_copies INTO available_copies
     FROM Inventory
-    WHERE ISBN = NEW.ISBN;    
+    WHERE Inventory.ISBN = NEW.ISBN;    
     IF available_copies > 0 THEN
         -- Εισαγωγή νέας εγγραφής στον πίνακα δανεισμένων
         INSERT INTO Loans (user_id, ISBN, loan_date)
