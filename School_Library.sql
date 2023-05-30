@@ -51,6 +51,7 @@ CREATE TABLE Users (
 	school_id INT UNSIGNED NOT NULL,
 	books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
+	overdue_returns INT(10),
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
 	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
 );
@@ -142,8 +143,7 @@ CREATE TABLE Loans (
 	user_id VARCHAR(200),
 	ISBN CHAR(13) NOT NULL,
 	loan_date DATE NOT NULL,
-	return_date DATE,
-	overdue_returns INT NOT NULL, 
+	return_date DATE, 
 	FOREIGN KEY (user_id) REFERENCES Users(user_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
@@ -186,6 +186,19 @@ BEGIN
     WHERE ISBN = NEW.ISBN;
 END;;
 
+CREATE EVENT UpdateOverdueReturns
+ON SCHEDULE EVERY 1 DAY
+STARTS '2023-05-28 00:00:00'
+DO
+BEGIN
+    UPDATE Users
+    SET overdue_returns = (
+        SELECT COUNT(*)
+        FROM Loans
+        WHERE user_id = Users.user_id
+        AND return_date < CURDATE()
+    );
+END;;
 
 -- Δημιουργία trigger για περιορισμούς δανεισμού και κρατήσεων
 DELIMITER ;;
@@ -214,6 +227,13 @@ END ;;
 
 DELIMITER ;;
 
+CREATE TRIGGER calculate_return_date
+BEFORE INSERT ON Loans
+FOR EACH ROW
+BEGIN
+    SET NEW.return_date = DATE_ADD(NEW.loan_date, INTERVAL 7 DAY);
+END;;
+
 CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
@@ -223,7 +243,6 @@ BEGIN
     FROM Loans
     WHERE user_id = NEW.user_id
     AND return_date < CURRENT_DATE
-    AND returned = 1;
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
