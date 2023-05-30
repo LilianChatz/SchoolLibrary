@@ -315,22 +315,19 @@ CREATE TRIGGER cancel_reservation_trigger
 AFTER DELETE ON Reservations
 FOR EACH ROW
 BEGIN
-    DECLARE reservations_exist INT;
-    -- Ανάκτηση των user_id και ISBN από τη διαγραφή της κράτησης
-    SET user_id = OLD.user_id;
-    SET ISBN = OLD.ISBN;    
     -- Έλεγχος για την ύπαρξη της κράτησης
-    SELECT COUNT(*) INTO reservations_exist
-    FROM Reservations
-    WHERE user_id = user_id AND ISBN = ISBN;
-    -- Αν η κράτηση υπάρχει, εκτελέστε τις ενέργειες ακύρωσης
-    IF reservations_exist > 0 THEN
+    IF EXISTS (
+        SELECT 1
+        FROM Reservations
+        WHERE user_id = OLD.user_id AND ISBN = OLD.ISBN
+    ) THEN
         -- Ενημέρωση του πίνακα Inventory για το βιβλίο που ακυρώθηκε η κράτηση
         UPDATE Inventory
         SET available_copies = available_copies + 1
-        WHERE ISBN = ISBN;        
-    END IF;    
+        WHERE ISBN = OLD.ISBN;
+    END IF;
 END;;
+
 
 -- Δημιουργία του προγραμματισμένου γεγονότος
 DELIMITER ;;
