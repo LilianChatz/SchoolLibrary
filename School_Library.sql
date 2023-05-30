@@ -139,7 +139,7 @@ DELIMITER ;
 -- Πίνακας: Book_Loan
 CREATE TABLE Loans (
 	loan_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	user_id INT NOT NULL,
+	user_id VARCHAR(200),
 	ISBN CHAR(13) NOT NULL,
 	loan_date DATE NOT NULL,
 	return_date DATE,
@@ -151,8 +151,8 @@ CREATE TABLE Loans (
 -- Πίνακας: Book_Reservations
 CREATE TABLE Reservations (
 	reservation_id INT PRIMARY KEY,
-	user_id INT,
-	book_id INT,
+	user_id VARCHAR(200),
+	ISBN CHAR(13) NOT NULL,
 	reservation_date DATE,
 	reservation_count INT NOT NULL,
 	on_hold BOOLEAN DEFAULT FALSE,
@@ -162,12 +162,13 @@ CREATE TABLE Reservations (
 
 -- Πίνακας: Book_Reviews
 CREATE TABLE Reviews (
-  user_id INT,
-  book_id INT,
-  review_text TEXT,
-  likert_rating INT CHECK (likert_rating >= 1 AND likert_rating <= 5),
-  FOREIGN KEY (user_id) REFERENCES Users(user_id),
-  FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+	review_id INT PRIMARY KEY,
+	user_id VARCHAR(200),
+	ISBN CHAR(13) NOT NULL,
+	review_text TEXT,
+	likert_rating INT CHECK (likert_rating >= 1 AND likert_rating <= 5),
+	FOREIGN KEY (user_id) REFERENCES Users(user_id),
+	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
 
 -- Δημιουργία trigger για περιορισμούς δανεισμού και κρατήσεων
