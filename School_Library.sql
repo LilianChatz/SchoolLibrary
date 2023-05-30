@@ -60,7 +60,7 @@ CREATE TRIGGER SetApprovalAc
 BEFORE INSERT ON Users
 FOR EACH ROW
 BEGIN
-	IF NEW.role_id = '1' THEN
+	IF NEW.role_id = 1 THEN
 		SET NEW.approval_ac = TRUE;
 	ELSE
 		SET NEW.approval_ac = FALSE;
