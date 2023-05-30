@@ -370,7 +370,7 @@ CREATE TRIGGER check_reservation
 AFTER INSERT ON Reservations
 FOR EACH ROW
 BEGIN
-    DECLARE reservation_count INT
+    DECLARE reservation_count INT;
     SELECT COUNT(*) INTO reservation_count
     FROM Reservations
     WHERE ISBN = NEW.ISBN AND user_id=new.user_id;
