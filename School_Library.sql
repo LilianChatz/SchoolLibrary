@@ -237,7 +237,7 @@ CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-DECLARE reservation_count INT,
+DECLARE reservation_count INT;
 -- Έλεγχος καθυστερημένων επιστροφών
     SELECT overdue_returns
     FROM Users
