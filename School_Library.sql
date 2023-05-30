@@ -154,7 +154,6 @@ CREATE TABLE Reservations (
 	user_id VARCHAR(200),
 	ISBN CHAR(13) NOT NULL,
 	reservation_date DATE,
-	reservation_count INT NOT NULL,
 	on_hold BOOLEAN DEFAULT FALSE,
 	FOREIGN KEY (user_id) REFERENCES Users(user_id),
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
@@ -238,16 +237,16 @@ CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
+DECLARE reservation_count INT,
 -- Έλεγχος καθυστερημένων επιστροφών
     SELECT overdue_returns
-    FROM Loans
+    FROM Users
     WHERE user_id = NEW.user_id
-    AND return_date < CURRENT_DATE
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
 	-- Έλεγχος αν υπάρχει κράτηση για το βιβλίο και τον συγκεκριμένο χρήστη
-    SELECT reservation_count
+    SELECT COUNT(*) INTO reservation_count
     FROM Reservations
     WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;    
     -- Αν υπάρχει κράτηση, αποτροπή της εισαγωγής της εγγραφής δανεισμού
@@ -267,6 +266,42 @@ BEGIN
 END ;;
 
 DELIMITER ;;
+
+CREATE TRIGGER update_books_borrowed
+BEFORE INSERT ON Loans
+FOR EACH ROW
+BEGIN
+    UPDATE Users
+    SET books_borrowed = books_borrowed + 1
+    WHERE user_id = NEW.user_id;
+END;;
+
+CREATE TRIGGER update_books_borrowed_after_delete
+AFTER DELETE ON Loans
+FOR EACH ROW
+BEGIN
+    UPDATE Users
+    SET books_borrowed = books_borrowed - 1
+    WHERE user_id = OLD.user_id;
+END;;
+
+CREATE TRIGGER update_weekly_reservations
+BEFORE INSERT ON Reservations
+FOR EACH ROW
+BEGIN
+    UPDATE Users
+    SET weekly_reservations = weekly_reservations + 1
+    WHERE user_id = NEW.user_id;
+END;;
+
+CREATE TRIGGER update_weekly_reservations_after_delete
+AFTER DELETE ON Reservations
+FOR EACH ROW
+BEGIN
+    UPDATE Users
+    SET weekly_reservations = weekly_reservations - 1
+    WHERE user_id = OLD.user_id;
+END;;
 
 CREATE TRIGGER cancel_reservation_trigger
 AFTER DELETE ON Reservations
@@ -298,8 +333,8 @@ DO
 BEGIN
     -- Εύρεση και ακύρωση των κρατήσεων που έχουν λήξει
     UPDATE Reservations
-    SET on_hold = FALSE
-    WHERE on_hold = TRUE AND reservation_date < CURRENT_DATE() - INTERVAL 7 DAY;
+    SET on_hold = 0
+    WHERE on_hold = 1 AND reservation_date < CURRENT_DATE() - INTERVAL 7 DAY;
 END;;
 DELIMITER ;
 
@@ -329,9 +364,10 @@ CREATE TRIGGER check_reservation
 AFTER INSERT ON Reservations
 FOR EACH ROW
 BEGIN
-    SELECT reservation_count
+    DECLARE reservation_count INT
+    SELECT COUNT(*) INTO reservation_count
     FROM Reservations
-    WHERE ISBN = NEW.ISBN;
+    WHERE ISBN = NEW.ISBN AND user_id=new.user_id;
     IF reservation_count > 0 THEN
         -- Το βιβλίο βρίσκεται σε κράτηση
    	SET on_hold = 1
