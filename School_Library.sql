@@ -175,7 +175,7 @@ CREATE TRIGGER UpdateReservedStatus AFTER INSERT ON Reservations FOR EACH ROW BE
     UPDATE Inventory
     SET reserved = 1
     WHERE ISBN = NEW.ISBN;
-END;
+END;;
 
 CREATE TRIGGER UpdateLoanedStatus
 AFTER INSERT ON Loans
@@ -184,7 +184,7 @@ BEGIN
     UPDATE Inventory
     SET loaned = 1
     WHERE ISBN = NEW.ISBN;
-END;
+END;;
 
 
 -- Δημιουργία trigger για περιορισμούς δανεισμού και κρατήσεων
@@ -304,7 +304,7 @@ BEGIN
         DELETE FROM Reservations
         WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;
     END IF;
-END;
+END;;
 
 CREATE TRIGGER check_reservation 
 AFTER INSERT ON Reservations
@@ -315,9 +315,9 @@ BEGIN
     WHERE ISBN = NEW.ISBN;
     IF reservation_count > 0 THEN
         -- Το βιβλίο βρίσκεται σε κράτηση
-        SET on_hold = TRUE
+   	SET on_hold = 1
     END IF;
-END;
+END;;
 
 CREATE TRIGGER check_and_reserve_book
 BEFORE INSERT ON Loans
@@ -328,10 +328,10 @@ BEGIN
         UPDATE Inventory SET available_copies = available_copies - 1 WHERE ISBN = NEW.ISBN;
     ELSE
         INSERT INTO Reservations (user_id, ISBN, reservation_date, on_hold)
-        VALUES (NEW.user_id, NEW.ISBN, NOW(), TRUE);
+        VALUES (NEW.user_id, NEW.ISBN, NOW(), 1);
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Το βιβλίο δεν είναι διαθέσιμο. Έγινε κράτηση';
     END IF;
-END;
+END;;
 
 -- Παραχώρηση δικαιωμάτων στον ρόλο του χειριστή
 GRANT ALL PRIVILEGES ON Reviews TO role_name='Χειριστής';
