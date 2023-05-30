@@ -129,7 +129,7 @@ BEGIN
     SELECT COUNT(*) INTO book_count
     FROM Books
     WHERE ISBN = NEW.ISBN;
-    IF count = 0 THEN
+    IF book_count = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Το βιβλίο με το συγκεκριμένο ISBN δεν υπάρχει';
     END IF;
 END;;
