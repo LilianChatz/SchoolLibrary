@@ -241,7 +241,7 @@ DECLARE reservation_count INT,
 -- Έλεγχος καθυστερημένων επιστροφών
     SELECT overdue_returns
     FROM Users
-    WHERE user_id = NEW.user_id
+    WHERE user_id = NEW.user_id;
     IF overdue_returns > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Έχετε καθυστερημένες επιστροφές.';
     END IF;
