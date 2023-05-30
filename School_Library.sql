@@ -376,6 +376,7 @@ BEGIN
     WHERE ISBN = NEW.ISBN AND user_id=new.user_id;
     IF reservation_count > 0 THEN
         -- Το βιβλίο βρίσκεται σε κράτηση
+	UPDATE Reservations
    	SET on_hold = 1
     END IF;
 END;;
