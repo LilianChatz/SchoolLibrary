@@ -35,7 +35,7 @@ CREATE TABLE user_details (
 	user_details_id VARCHAR(200) PRIMARY KEY,
 	first_name VARCHAR(100) NOT NULL,
 	last_name VARCHAR(100) NOT NULL,
-	address_id INT NOT NULL,
+	address_id INT UNSIGNED NOT NULL,
 	email1 VARCHAR(100) NOT NULL,
 	phone1 VARCHAR(100) NOT NULL,
 	birth_date DATE
