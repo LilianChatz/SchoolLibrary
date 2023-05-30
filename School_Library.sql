@@ -125,7 +125,7 @@ CREATE TRIGGER check_book_exists
 BEFORE INSERT ON Inventory
 FOR EACH ROW
 BEGIN
-    DECLARE book_count INT
+    DECLARE book_count INT;
     SELECT COUNT(*) INTO book_count
     FROM Books
     WHERE ISBN = NEW.ISBN;
