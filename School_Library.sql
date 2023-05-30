@@ -38,7 +38,7 @@ CREATE TABLE user_details (
 	address_id INT UNSIGNED NOT NULL,
 	email1 VARCHAR(100) NOT NULL,
 	phone1 VARCHAR(100) NOT NULL,
-	birth_date DATE
+	birth_date DATE,
 	FOREIGN KEY(address_id) REFERENCES address(address_id)
 );
 
