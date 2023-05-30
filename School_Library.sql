@@ -48,21 +48,12 @@ CREATE TABLE Users (
 	password VARCHAR(255) NOT NULL,
 	user_details_id INT NOT NULL,
 	role_id INT,
-	approval_ac BOOLEAN DEFAULT FALSE,
 	school_id INT UNSIGNED NOT NULL,
 	max_books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
 	FOREIGN KEY (school_id) REFERENCES SchoolUnit(school_id)
 );
-
-DELIMETER;;
-CREATE TRIGGER SetApprovalAc BEFORE INSERT ON Users FOR EACH ROW BEGIN
-	IF role_id = 1 THEN
-		SET approval_ac = TRUE;
-	END IF;
-END;;
-
 
 -- Πίνακας: Books
 CREATE TABLE Books (
