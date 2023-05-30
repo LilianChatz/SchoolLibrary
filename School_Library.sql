@@ -49,7 +49,7 @@ CREATE TABLE Users (
 	user_details_id INT NOT NULL,
 	role_id INT,
 	approval_ac BOOLEAN DEFAULT FALSE,
-	school_id INT NOT NULL,
+	school_id INT UNSIGNED NOT NULL,
 	max_books_borrowed INT DEFAULT 0,
 	weekly_reservations INT DEFAULT 0,
 	FOREIGN KEY (role_id) REFERENCES Roles(role_id),
