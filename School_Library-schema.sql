@@ -398,9 +398,3 @@ DECLARE available_copies INT;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Το βιβλίο δεν είναι διαθέσιμο. Έγινε κράτηση';
     END IF;
 END;;
-
--- Παραχώρηση δικαιωμάτων στον ρόλο του χειριστή
-GRANT ALL PRIVILEGES ON Reviews TO role_name='Χειριστής';
-GRANT ALL PRIVILEGES ON Loans TO role_name='Χειριστής';
-GRANT ALL PRIVILEGES ON Reservations TO role_name='Χειριστής';
-GRANT ALL PRIVILEGES ON Books TO role_name='Χειριστής';
