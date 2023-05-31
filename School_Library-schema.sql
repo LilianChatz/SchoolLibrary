@@ -32,7 +32,7 @@ CREATE TABLE SchoolUnit (
 );
 
 CREATE TABLE user_details (
-	user_details_id VARCHAR(200) PRIMARY KEY,
+	user_details_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	first_name VARCHAR(100) NOT NULL,
 	last_name VARCHAR(100) NOT NULL,
 	address_id INT UNSIGNED NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE user_details (
 CREATE TABLE Users (
 	user_id VARCHAR(200) PRIMARY KEY,
 	password VARCHAR(255) NOT NULL,
-	user_details_id VARCHAR(200),
+	user_details_id INT NOT NULL AUTO_INCREMENT,
 	role_id INT,
 	school_id INT UNSIGNED NOT NULL,
 	books_borrowed INT DEFAULT 0,
