@@ -339,8 +339,7 @@ STARTS CURRENT_TIMESTAMP
 DO
 BEGIN
     -- Εύρεση και ακύρωση των κρατήσεων που έχουν λήξει
-    UPDATE Reservations
-    SET on_hold = 0
+    DELETE FROM Reservations
     WHERE on_hold = 1 AND reservation_date < CURRENT_DATE() - INTERVAL 7 DAY;
 END;;
 DELIMITER ;
