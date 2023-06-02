@@ -76,7 +76,7 @@ CREATE TABLE Categories (
 );
 
 CREATE TABLE book_category (
-	category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	category_id INT UNSIGNED NOT NULL,
 	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY (category_id, ISBN),
 	FOREIGN KEY (category_id) REFERENCES Categories(category_id),
@@ -91,7 +91,7 @@ CREATE TABLE Authors (
 );
 
 CREATE TABLE book_author (
-	author_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	author_id INT UNSIGNED NOT NULL,
 	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY (author_id, ISBN),
 	FOREIGN KEY (author_id) REFERENCES Authors(author_id),
@@ -104,7 +104,7 @@ CREATE TABLE Languages (
 );
 
 CREATE TABLE book_language (
-	language_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	language_id INT UNSIGNED NOT NULL,
 	ISBN CHAR(13) NOT NULL,
 	PRIMARY KEY(language_id, ISBN),
 	FOREIGN KEY (language_id) REFERENCES Languages(language_id),
