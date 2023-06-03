@@ -241,7 +241,7 @@ UPDATE Loans
     SET NEW.return_date = DATE_ADD(NEW.loan_date, INTERVAL 7 DAY)
     WHERE Loans.user_id = NEW.user_id;
 END;;
-DELIMTER ;
+DELIMITER ;
 
 DELIMITER ;;
 CREATE TRIGGER check_availability
@@ -303,7 +303,7 @@ AFTER DELETE ON Loans
 FOR EACH ROW
 BEGIN
     UPDATE Users
-    SET Users.books_borrowed = OLD.books_borrowed - 1
+    SET Users.books_borrowed = Users.books_borrowed - 1
     WHERE Users.user_id = OLD.user_id;
 END;;
 DELIMITER ;
