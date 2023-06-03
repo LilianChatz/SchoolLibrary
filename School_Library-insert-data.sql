@@ -247,6 +247,21 @@ INSERT INTO book_category VALUES (1,'0157413090589'),(2,'0309125300053'),(3,'034
 (2,'9656794125610'),(3,'9671566990816'),(4,'9700875400591'),(5,'9748295568219'),
 (6,'9777285786074'),(7,'9824110913607'),(8,'9844334340055'),(9,'9933079012847');
 
+INSERT INTO Loans VALUES
+(1,'adams.cary','4069561543172',CURRENT_DATE(),null),(2,'adams.cary','4147938229709',CURRENT_DATE(),null),(3,'alison.dooley','4152328169255',CURRENT_DATE(),null),
+(4,'ametz','4179754887362',CURRENT_DATE(),null),(5,'ametz','4182002657898',CURRENT_DATE(),null),(6,'andrew.crooks','4263648395419',CURRENT_DATE(),null),(7,'andrew.crooks','4273459274164',CURRENT_DATE(),null),
+(8,'bashirian.sofia','4412064918215',CURRENT_DATE(),null),(9,'bashirian.sofia','4658557346455',CURRENT_DATE(),null),(10,'billie84','5163924492405',CURRENT_DATE(),null),(11,'billie84','5351011077272',CURRENT_DATE(),null),
+(12,'branson05','5360341106366',CURRENT_DATE(),null),(13,'branson05','5458813028951',CURRENT_DATE(),null),(14,'cary77','5471666254315',CURRENT_DATE(),null),(15,'cgleichner','5549335074356',CURRENT_DATE(),null),
+(16,'cgleichner','5629737954048',CURRENT_DATE(),null),(17,'ckuhlman','5683158893388',CURRENT_DATE(),null),(18,'ckuhlman','5803937890495',CURRENT_DATE(),null),(19,'darrell.paucek','5807420939019',CURRENT_DATE(),null),
+(20,'darrell.paucek','5918490969471',CURRENT_DATE(),null),(21,'davion52','6177330040308',CURRENT_DATE(),null),(22,'davion52','6224941195101',CURRENT_DATE(),null),(23,'dbahringer','6247424405008',CURRENT_DATE(),null),
+(24,'dbahringer','6445528678029',CURRENT_DATE(),null),(25,'dickens.alaina','6570799077648',CURRENT_DATE(),null),(26,'dlemke','6617937351640',CURRENT_DATE(),null),(27,'dlemke','6619783279466',CURRENT_DATE(),null),
+(28,'duane95','6645308483848',CURRENT_DATE(),null),(29,'duane95','6675524241383',CURRENT_DATE(),null),(30,'ecorwin','6711626708958',CURRENT_DATE(),null),(31,'ecorwin','6755869202617',CURRENT_DATE(),null),
+(32,'elva20','6908530993578',CURRENT_DATE(),null),(33,'elva20','6947973884517',CURRENT_DATE(),null),(34,'gerhold.hosea','6988522165788',CURRENT_DATE(),null),(35,'gerhold.hosea','7005215057194',CURRENT_DATE(),null),
+(36,'greenfelder.percival','7545109172552',CURRENT_DATE(),null),(37,'xgibson','7566432107746',CURRENT_DATE(),null),(38,'hintz.jackeline','7642754018078',CURRENT_DATE(),null),(39,'hintz.jackeline','7738456096552',CURRENT_DATE(),null),
+(40,'hubert34','7792132134659',CURRENT_DATE(),null),(41,'hubert34','7935451221418',CURRENT_DATE(),null),(42,'janie03','7941888585909',CURRENT_DATE(),null),(43,'janie03','8118086061468',CURRENT_DATE(),null),
+(44,'josie00','8218184188073',CURRENT_DATE(),null),(45,'josie00','8254430179233',CURRENT_DATE(),null),(46,'kovacek.savannah','8376219724743',CURRENT_DATE(),null),(47,'kovacek.savannah','8458050025030',CURRENT_DATE(),null),
+(48,'kpfannerstill','8492956091180',CURRENT_DATE(),null),(49,'leland46','8538921979124',CURRENT_DATE(),null),(50,'leland46','8573335154908',CURRENT_DATE(),null);
+
 INSERT INTO Reservations VALUES (1,'adams.cary','0157413090589','2023-06-03',1),(2,'alison.dooley','0309125300053','2023-06-03',1),
 (3,'ametz','0345131603109','2023-06-03',1),(4,'andrew.crooks','0352118015983','2023-06-03',1),
 (5,'bashirian.sofia','0405563660389','2023-06-03',1),(6,'billie84','0477045960203','2023-06-03',1),
@@ -261,12 +276,12 @@ INSERT INTO Reservations VALUES (1,'adams.cary','0157413090589','2023-06-03',1),
 (23,'hubert34','1945338484581','2023-06-04',1),(24,'janie03','2091721664881','2023-06-03',1),
 (25,'josie00','2195180166139','2023-06-03',1),(26,'kovacek.savannah','2309667427351','2023-06-03',1),
 (27,'kpfannerstill','2391209224516','2023-06-03',1),(28,'leland46','2487130024672','2023-06-03',1),
-(29,'lrath','2542361081688','2023-06-03',1),(30,'mohammed17','2556378290306','2023-06-03',1),
-(31,'oabernathy','2664489718402','2023-06-03',1),(32,'oscar.purdy','2885082825476','2023-06-03',1),
-(33,'presley.waters','3091323357145','2023-06-03',1),(34,'pwaelchi','3212405987062','2023-06-03',1),
-(35,'quitzon.abby','3558939248584','2023-06-03',1),(36,'rupert.nolan','3692122453574','2023-06-03',1),
-(37,'shields.haley','3770672196922','2023-06-03',1),(38,'stanton.jalyn','3884058516148','2023-06-03',1),
-(39,'stehr.mathew','3928905494075','2023-06-03',1),(40,'travis.abernathy','3991936949373','2023-06-03',1);
+(29,'adams.cary','2542361081688','2023-06-03',1),(30,'ametz','2556378290306','2023-06-03',1),
+(31,'andrew.crooks','2664489718402','2023-06-03',1),(32,'bashirian.sofia','2885082825476','2023-06-03',1),
+(33,'billie84','3091323357145','2023-06-03',1),(34,'branson05','3212405987062','2023-06-03',1),
+(35,'cgleichner','3558939248584','2023-06-03',1),(36,'ckuhlman','3692122453574','2023-06-03',1),
+(37,'darrell.paucek','3770672196922','2023-06-03',1),(38,'davion52','3884058516148','2023-06-03',1),
+(39,'dbahringer','3928905494075','2023-06-03',1),(40,'dlemke','3991936949373','2023-06-03',1);
 
 INSERT INTO Reviews VALUES (1,'adams.cary','0157413090589','Alice, quite forgetting her promise. \'Treacle,\' said a sleepy voice behind her. \'Collar that Dormouse,\' the Queen said to the King, \'that only makes the world am I? Ah, THAT\'S the great question is,.',2),
 (2,'alison.dooley','0309125300053','Alice. \'Now we shall have somebody to talk about her any more questions about it, and very nearly carried it off. \'If everybody minded their own business!\' \'Ah, well! It means much the same as the.',3),(3,'ametz','0345131603109','March Hare said--\' \'I didn\'t!\' the March Hare. The Hatter shook his grey locks, \'I kept all my limbs very supple By the use of this rope--Will the roof off.\' After a minute or two, looking for them,.',3),
