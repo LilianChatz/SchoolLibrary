@@ -172,21 +172,26 @@ CREATE TABLE Reviews (
 	FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
 );
 
+DELIMITER;;
 CREATE TRIGGER UpdateReservedStatus AFTER INSERT ON Reservations FOR EACH ROW BEGIN
     UPDATE Inventory
     SET reserved = 1
     WHERE ISBN = NEW.ISBN;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER UpdateLoanedStatus
 AFTER INSERT ON Loans
 FOR EACH ROW
 BEGIN
     UPDATE Inventory
-    SET loaned = 1
-    WHERE ISBN = NEW.ISBN;
+    SET Inventory.loaned = 1
+    WHERE Inventory.ISBN = NEW.ISBN;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE EVENT UpdateOverdueReturns
 ON SCHEDULE EVERY 1 DAY
 STARTS '2023-05-28 00:00:00'
@@ -196,10 +201,11 @@ BEGIN
     SET overdue_returns = (
         SELECT COUNT(*)
         FROM Loans
-        WHERE user_id = Users.user_id
-        AND return_date < CURDATE()
+        WHERE Loans.user_id = Users.user_id
+        AND Loans.return_date < CURDATE()
     );
 END;;
+DELIMITER;
 
 -- Δημιουργία trigger για περιορισμούς δανεισμού και κρατήσεων
 DELIMITER ;;
@@ -224,7 +230,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
 END ;;
-
+DELIMITER;
 
 DELIMITER ;;
 
@@ -232,9 +238,13 @@ CREATE TRIGGER calculate_return_date
 BEFORE INSERT ON Loans
 FOR EACH ROW
 BEGIN
-    SET NEW.return_date = DATE_ADD(NEW.loan_date, INTERVAL 7 DAY);
+UPDATE Loans
+    SET NEW.return_date = DATE_ADD(NEW.loan_date, INTERVAL 7 DAY)
+    WHERE Loans.user_id = user_id;
 END;;
+DELIMTER;
 
+DELIMITER;;
 CREATE TRIGGER check_availability
 BEFORE INSERT ON Loans
 FOR EACH ROW
@@ -274,6 +284,7 @@ BEGIN
         SET MESSAGE_TEXT = 'Δεν υπάρχουν διαθέσιμα αντίτυπα για δανεισμό ή κράτηση.';
     END IF;
 END ;;
+DELIMITER;
 
 DELIMITER ;;
 
@@ -285,7 +296,9 @@ BEGIN
     SET books_borrowed = books_borrowed + 1
     WHERE user_id = NEW.user_id;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER update_books_borrowed_after_delete
 AFTER DELETE ON Loans
 FOR EACH ROW
@@ -294,16 +307,20 @@ BEGIN
     SET books_borrowed = books_borrowed - 1
     WHERE user_id = OLD.user_id;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER update_weekly_reservations
 BEFORE INSERT ON Reservations
 FOR EACH ROW
 BEGIN
     UPDATE Users
-    SET weekly_reservations = weekly_reservations + 1
-    WHERE user_id = NEW.user_id;
+    SET Users.weekly_reservations = weekly_reservations + 1
+    WHERE Users.user_id = NEW.user_id;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER update_weekly_reservations_after_delete
 AFTER DELETE ON Reservations
 FOR EACH ROW
@@ -312,7 +329,9 @@ BEGIN
     SET weekly_reservations = weekly_reservations - 1
     WHERE user_id = OLD.user_id;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER cancel_reservation_trigger
 AFTER DELETE ON Reservations
 FOR EACH ROW
@@ -329,7 +348,7 @@ BEGIN
         WHERE ISBN = OLD.ISBN;
     END IF;
 END;;
-
+DELIMITER;
 
 -- Δημιουργία του προγραμματισμένου γεγονότος
 DELIMITER ;;
@@ -344,6 +363,7 @@ BEGIN
 END;;
 DELIMITER ;
 
+DELIMITER;;
 CREATE TRIGGER convert_reservation_to_loan
 AFTER INSERT ON Reservations
 FOR EACH ROW
@@ -366,7 +386,9 @@ DECLARE available_copies INT;
         WHERE user_id = NEW.user_id AND ISBN = NEW.ISBN;
     END IF;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER check_reservation 
 AFTER INSERT ON Reservations
 FOR EACH ROW
@@ -382,7 +404,9 @@ BEGIN
 	WHERE ISBN = NEW.ISBN AND user_id=new.user_id;
     END IF;
 END;;
+DELIMITER;
 
+DELIMITER;;
 CREATE TRIGGER check_and_reserve_book
 BEFORE INSERT ON Loans
 FOR EACH ROW
@@ -397,3 +421,4 @@ DECLARE available_copies INT;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Το βιβλίο δεν είναι διαθέσιμο. Έγινε κράτηση';
     END IF;
 END;;
+DELIMITER;
